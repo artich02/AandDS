@@ -1,0 +1,111 @@
+#include <iostream>
+#include <cstring>
+#define SIZE 10
+using namespace std;
+class Stack{
+    
+    int * buffer = new int[SIZE];
+    int size = SIZE;
+    int top = -1;
+
+    public:
+    
+    Stack() = default;
+    Stack(const Stack & r): buffer(new int[r.size]), size(r.size), top (r.top)
+    {
+        memcpy (buffer, r.buffer, sizeof(int) * (top+1));
+    }
+    
+    Stack & operator=(const Stack & r)
+    {
+        if(this != & r)
+        {
+            if(size > r.top)
+            {
+                memcpy(buffer, r.buffer, sizeof(int)*(top+1));
+            }
+            else
+            {
+                delete [] buffer;
+                buffer = new int[r.size];
+                memcpy (buffer, r.buffer, sizeof(int)*(r.top+1));
+                size = r.size;
+            }
+            top = r.top;
+        }
+        return *this;
+    }
+    
+    ~Stack() {
+        delete [] buffer;
+    }
+    bool IsEmpty() const{
+        return (top == -1);    
+    }
+    bool IsFull() const{
+        return (top == size - 1);    
+    }
+    int get_top() const {
+        if(!IsEmpty()) return buffer[top];
+        cerr<<"Stack is Empty \n";
+        exit(1);
+    }
+    void reset(){
+        top = -1;
+    }
+    
+    bool pop(){
+        if(IsEmpty()) return false;
+        top--;
+        return true;
+    }
+    bool push(int element){
+        if(IsFull()){
+            int * new_buffer = new int[size *= 2];
+            if(!new_buffer) return false;
+            memcpy(new_buffer, buffer, sizeof(int)*(top+1) );
+            delete [] buffer;
+            buffer = new_buffer;
+        }
+        buffer[++top] = element;
+        return true;
+    }
+    void print() const{
+        if(IsEmpty()) {
+            cout<<"Stack is Empty \n";
+            return; 
+        }
+            cout<<"top -> ";
+        for(int i = top; i >= 0; i--) 
+            cout<<buffer[i]<<" -> ";
+        cout<<endl;
+    }
+    
+};
+
+int main()
+{
+    Stack st1;
+    st1.push(1);
+    st1.push(2);
+    st1.push(3);
+    st1.push(4);
+    st1.print(); // 4 3 2 1
+    st1.pop();
+    st1.pop();
+    st1.print();
+    st1.reset();
+    for(int i = 0; i < 36; i++){
+         st1.push(i);   
+    }
+    st1.print();
+    Stack st2=st1;
+    st2.print();
+    st2.pop();
+    st2.pop();
+    st2.print();
+    st1=st2;
+    
+    st1.print();
+    return 0;
+}
