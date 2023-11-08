@@ -1,0 +1,132 @@
+#include <iostream>
+#include <cstring>
+#define SIZE 6
+using namespace std;
+
+class Dequeue {
+    int * buffer = new int[SIZE];
+    int start = -1;
+    int end = -1;
+    int size = SIZE;
+
+    public:
+        Dequeue() = default;
+        Dequeue(const Dequeue & r) : buffer(new int[r.size]),
+                start(r.start), end(r.end), size(r.size)   
+        {
+            memcpy(buffer, r.buffer, size * sizeof(int));
+        }
+        
+        Dequeue & operator=(const Dequeue & r){
+            if(this != &r){
+                delete [] buffer;
+                buffer = new int[r.size];
+                memcpy(buffer, r.buffer, r.size*sizeof(int));
+                start = r.start;
+                end = r.end;
+            }
+            return *this;
+        }
+        
+        bool IsEmpty() const {
+            return (start == end && start == -1);
+        }
+        bool IsFull() const {
+            return ((end + 1) % size == start);
+        }
+        void reset() {
+            start = end = -1;
+        }
+        bool push_front(int element) {
+            if (IsFull()) {
+                int * new_buffer = new int[size*2];
+                int i = start, j = 0;
+                while(i != end){
+                    new_buffer[j] = buffer[i];
+                    j++;
+                    i = (i + 1)%size;
+                }new_buffer[j] = buffer[i];
+                delete [] buffer;
+                buffer = new_buffer;
+                start = 0;
+                end = j;
+                size *= 2;
+            }
+            if (IsEmpty()) {
+                start = end = 0;
+                buffer[start] = element;
+            }
+            else {
+                start = (start - 1 + size) % size;
+                buffer[start] = element;
+            }
+            return true;
+        }
+
+        bool push_back(int element) {
+            if (IsFull()) {
+                int * new_buffer = new int[size*2];
+                int i = start, j = 0;
+                while(i != end){
+                    new_buffer[j] = buffer[i];
+                    j++;
+                    i = (i + 1)%size;
+                }new_buffer[j] = buffer[i];
+                delete [] buffer;
+                buffer = new_buffer;
+                start = 0;
+                end = j;
+                size *= 2;
+            }
+            if (IsEmpty()) {
+                start = end = 0;
+                buffer[end] = element;
+            }
+            else {
+                end = (end + 1) % size;
+                buffer[end] = element;
+            }
+            return true;        
+        }
+
+        bool pop_front() {
+            if (IsEmpty()) return false;
+            if (start == end)  start = end = -1;
+            else start = (start + 1) % size;
+            return true;
+        }
+        bool pop_back() {
+            if (IsEmpty()) return false;
+            if (start == end)  start = end = -1;
+            else end= (end - 1 + size) % size;
+            return true;
+        }
+        int get_front() const{
+            if (IsEmpty()) exit(1);
+            return buffer[start];
+        }
+        int get_back() const {
+            if (IsEmpty()) exit(1);
+            return buffer[end];
+        }
+       int get_size() const{
+        if (IsEmpty()) return 0;
+        if (start <= end) return end - start + 1;
+        return size - (start - end - 1);
+       }
+void print() const{
+    if (IsEmpty()) return;
+    for (int i = start; i != end; i = (i + 1) % size) {
+        cout << buffer[i] << " ";
+    }
+    cout << buffer[end] << "\n";
+}
+};
+
+
+int main()
+{
+ 
+    
+    return 0;
+}
